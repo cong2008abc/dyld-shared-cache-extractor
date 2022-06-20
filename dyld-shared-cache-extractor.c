@@ -7,8 +7,8 @@
 
 #define PATH_SIZE 200
 
-static void (*extract)(const char *cache_path, const char *output_path,
-                       void (^progress)(int, int));
+static int (*extract)(const char* shared_cache_file_path, const char* extraction_root_path,
+                              void (^progress)(unsigned current, unsigned total));
 
 static int get_library_path(char *output) {
   FILE *pipe = popen("xcrun --sdk iphoneos --show-sdk-platform-path", "r");
@@ -47,7 +47,7 @@ static void extract_shared_cache(const char *library_path,
   if (!extract)
     fail("error: failed to load function from bundle: %s\n", library_path);
 
-  extract(cache_path, output_path, ^void(int completed, int total) {
+  extract(cache_path, output_path, ^void(unsigned int completed, unsigned int total) {
     printf("extracted %d/%d\n", completed, total);
   });
 }
